@@ -1,0 +1,43 @@
+services:
+  wamock:
+    image: ghcr.io/alrashidmtz/wamock:0.7.1
+    command:
+      - --port=4004
+      - --app-secret=${WEBHOOK_APP_SECRET:?set in .env}
+      - --verify-token=${WEBHOOK_VERIFY_TOKEN:?set in .env}
+      - --phone-number-id=${WAMOCK_PHONE_ID:?set in .env}
+      - --waba-id=${WAMOCK_WABA:?set in .env}
+      - --webhook-url=${WEBHOOK_URL:?set in .env}
+    networks: [default, frappe]
+    ports:
+      - "127.0.0.1:${WAMOCK_HOST_PORT:?set in .env}:4004"
+    restart: unless-stopped
+
+  seed:
+    image: wamock-bridge
+    build: ./bridge
+    command: ["npm", "run", "seed"]
+    depends_on:
+      wamock: { condition: service_healthy }
+    env_file:
+      - ./.env
+    restart: "no"
+
+  bridge:
+    image: wamock-bridge
+    build: ./bridge
+    depends_on:
+      wamock: { condition: service_healthy }
+    env_file:
+      - ./.env
+    volumes:
+      - bridge-auth:/data
+    restart: "no"
+
+volumes:
+  bridge-auth:
+
+networks:
+  frappe:
+    name: frappe_default
+    external: true
