@@ -5,7 +5,7 @@ import { captureLog, stubFetch } from '../helpers.ts'
 
 afterEach(() => mock.restoreAll())
 
-const text = (id: string, body: string) => ({ id, to: '62812', type: 'text', payload: { body } })
+const text = (id: string, body: string) => ({ id, to: '62812', type: 'text', payload: { text: { body } } })
 
 describe('createPump', () => {
   it('putaran pertama hanya menandai pesan lama, tidak mengirim', async () => {

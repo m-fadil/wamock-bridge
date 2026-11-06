@@ -9,11 +9,17 @@ afterEach(() => mock.restoreAll())
 const msg = (type: string, payload: Record<string, unknown>): OutboundMessage => ({ id: 'wamid.1', to: '62812', type, payload })
 
 const template = (components: unknown[]): OutboundMessage =>
-  msg('template', { name: 'imp_otp_code', language: { code: 'en_US' }, components })
+  msg('template', { template: { name: 'imp_otp_code', language: { code: 'en_US' }, components } })
 
 describe('renderText', () => {
   it('teks biasa dikembalikan apa adanya', async () => {
-    assert.equal(await renderText(msg('text', { body: 'halo' })), 'halo')
+    assert.equal(await renderText(msg('text', { text: { body: 'halo' } })), 'halo')
+  })
+
+  it('payload template asli dari wamock 0.7.1 (OTP) dirender', async () => {
+    stubFetch(() => ({ data: [{ name: 'imp_otp_code', language: 'en_US', components: [{ type: 'BODY', text: 'Kode OTP Anda {{1}}' }] }] }))
+    const captured = { template: { name: 'imp_otp_code', language: { code: 'en_US' }, components: [{ type: 'body', parameters: [{ type: 'text', text: '660622' }] }] } }
+    assert.equal(await renderText(msg('template', captured)), 'Kode OTP Anda 660622')
   })
 
   it('tipe lain diringkas dan dipotong 200 karakter payload', async () => {
