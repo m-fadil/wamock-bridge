@@ -13,6 +13,7 @@ docker compose ps
 docker compose logs seed          # "seed <name>/en_US APPROVED" dua kali
 curl -s localhost:4005/__mock/state
 ```
+`up -d` memakai image rilis `ghcr.io/m-fadil/wamock-bridge:latest`; tambahkan `--build` untuk membangun bridge dari `./bridge` dan memakai hasilnya.
 
 ## Image utama hilang / private
 Tanpa fallback. `docker compose up` saja memakai image yang sudah ada di cache lokal, dan kalau tidak ada di cache, berhenti di tahap pull dengan error mentah dari docker (seed dan bridge tidak ikut jalan). Supaya hilang/private selalu terdeteksi dengan pesan jelas, jalankan preflight sebelum `up`; preflight menarik ulang image dari registry:
@@ -55,7 +56,7 @@ Frappe jalan di container `frappe` (network `frappe_default`, port 8001 tidak di
 
 ## CI dan release
 - `.github/workflows/ci.yml` (push ke `main` dan PR): lint, typecheck, test bridge; `docker compose config` dan build image bridge.
-- `.github/workflows/release.yml` (tag `vX.Y.Z`): jalankan check yang sama, push image `ghcr.io/<owner>/<repo>-bridge` (tag `X.Y.Z`, `X.Y`, `latest`), lalu buat GitHub Release dengan release notes otomatis.
+- `.github/workflows/release.yml` (tag `vX.Y.Z`): jalankan check yang sama, push image `ghcr.io/<owner>/<repo>` (tag `X.Y.Z`, `X.Y`, `latest`), lalu buat GitHub Release dengan release notes otomatis.
 ```
 git tag v0.1.0 && git push origin v0.1.0
 ```
