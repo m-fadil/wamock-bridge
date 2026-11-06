@@ -53,6 +53,13 @@ Frappe jalan di container `frappe` (network `frappe_default`, port 8001 tidak di
 - Frappe -> wamock: WhatsApp Account `<account>` `url` = `http://wamock:4004` (bukan `localhost:4005`, itu loopback container Frappe).
 - Dari host: `localhost:4005`.
 
+## CI dan release
+- `.github/workflows/ci.yml` (push ke `main` dan PR): lint, typecheck, test bridge; `docker compose config` dan build image bridge.
+- `.github/workflows/release.yml` (tag `vX.Y.Z`): jalankan check yang sama, push image `ghcr.io/<owner>/<repo>-bridge` (tag `X.Y.Z`, `X.Y`, `latest`), lalu buat GitHub Release dengan release notes otomatis.
+```
+git tag v0.1.0 && git push origin v0.1.0
+```
+
 ## Kredit
 - [alrashidmtz/wamock](https://github.com/alrashidmtz/wamock): mock WhatsApp Cloud API, dipakai sebagai image `ghcr.io/alrashidmtz/wamock`. Lisensi MIT.
 - [WhiskeySockets/Baileys](https://github.com/WhiskeySockets/Baileys): library WhatsApp Web yang dipakai bridge. Tidak resmi dari WhatsApp/Meta.
